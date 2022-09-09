@@ -1,13 +1,16 @@
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: './src/index.js',
     output: {
-     filename: 'bundle.js',
+     filename: 'bundle.[contenthash].js',
      path: path.resolve(__dirname, './dist'),
-     publicPath: 'dist/'
+     publicPath: ''
+    //  publicPath: 'dist/'
     },
     mode:'none',
     module: {
@@ -37,12 +40,36 @@ module.exports = {
                     }
                 }
             },
+            {
+                test: /\.hbs$/,
+                use:[
+                    'handlebars-loader'
+                ]
+            }
         ]
     },
     plugins: [
         new TerserPlugin(),
         new MiniCssExtractPlugin({
-            filename: 'style.css',
-        })
+            filename: 'style.[contenthash].css',
+        }),
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            title: 'webpack app generated title',
+            // filename: 'index.html',
+            template: 'src/index.hbs',
+            description: 'some description about app',
+            // meta:{
+            //     description: 'some description about app'
+            // }
+        }),
+
+
+        // new CleanWebpackPlugin({
+        //     cleanOnceBeforeBuildPatterns: [
+        //         '**/*',
+        //         path.join(process.cwd(), 'build/**/*')
+        //     ]
+        // }),
     ]
   };
